@@ -8,22 +8,26 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class ViewController: UIViewController , UITableViewDataSource {
+    
+    
     @IBOutlet weak var timeLabel: UILabel!
     @IBOutlet weak var startButton: UIButton!
-    @IBOutlet weak var stopButton: UIButton!
+    //  @IBOutlet weak var stopButton: UIButton!
     @IBOutlet weak var restButton: UIButton!
-
-    @IBOutlet weak var lapTimeLabel: UILabel!
+    //  @IBOutlet weak var lapTimeLabel: UILabel!
+    @IBOutlet weak var lapTableView: UITableView!
     
     var timer = Timer()
     var counter = 0.0
-    var lapCounter = 1
     var timerStringText = ""
     var timerIsRunning = false
+    var lapCounter = 1
+    var lapArray = [String]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        lapTableView.dataSource = self
         startButton.isEnabled = true
         //stopButton.isEnabled = false
         restButton.isEnabled = false
@@ -31,18 +35,7 @@ class ViewController: UIViewController {
         
     }
     
-//
-//    @IBAction func stopButtonPressed(_ sender: UIButton) {
-//        startButton.isEnabled = true
-//        stopButton.isEnabled = false
-//        restButton.isEnabled = true
-//        timerIsRunning = false
-//        timer.invalidate()
-//
-//
-//
-//    }
-    
+
     @IBAction func resetButtonPressed(_ sender: UIButton) {
         //resting the timer functionality
         if !timerIsRunning {
@@ -53,10 +46,14 @@ class ViewController: UIViewController {
             timer.invalidate()
             counter = 0.0
             timeLabel.text = "00:00.00"
-            lapTimeLabel.text = ""
-        // take the lap time functionality
+            lapArray.removeAll()
+            lapTableView.reloadData()
+            // lapTimeLabel.text = ""
+            // take the lap time functionality
         }else{
-            lapTimeLabel.text? += "lap\(lapCounter)                                           \(timerStringText) \n" ?? "lap\(lapCounter)                                           \(timerStringText) \n"
+            lapArray.append( "lap\(lapCounter)                                      \(timerStringText) \n")
+            //?? "lap\(lapCounter)                                           \(timerStringText) \n"
+            lapTableView.reloadData()
             lapCounter += 1
         }
         
@@ -73,7 +70,7 @@ class ViewController: UIViewController {
             restButton.setTitle("lap", for: .normal)
             timerIsRunning=true
             
-        // stoping the time functionality
+            // stoping the time functionality
         }else{
             //startButton.isEnabled = true
             //stopButton.isEnabled = false
@@ -84,7 +81,7 @@ class ViewController: UIViewController {
             restButton.setTitle("reset", for: .normal)
         }
         
-    
+        
     }
     
     
@@ -121,10 +118,16 @@ class ViewController: UIViewController {
     
     // MARK :- laps table view Methods
     
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = lapTableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! UITableViewCell
+        cell.textLabel?.text = lapArray[indexPath.row] ?? ""
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return lapArray.count ?? 0
+    }
     
     
-    
-    
-
 }
 
